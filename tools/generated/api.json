@@ -1,0 +1,2107 @@
+{
+ "version": "0.2.0-rc.2",
+ "classes": [
+  {
+   "name": "AVWVCableActor",
+   "parent": "AActor",
+   "display": "Voltweave Cable",
+   "doc": "Wires two nodes together and draws a cable between them. The cable lights up while both ends carry power. Place it in the level, pick the two Actors and it connects them when the game starts.",
+   "members": [
+    {
+     "type": "property",
+     "name": "Start",
+     "display": "Start",
+     "ctype": "FVWVConnectionTarget",
+     "default": "",
+     "category": "Cable",
+     "editable": true,
+     "readonly_runtime": false,
+     "config": false,
+     "doc": "First end of the cable."
+    },
+    {
+     "type": "property",
+     "name": "End",
+     "display": "End",
+     "ctype": "FVWVConnectionTarget",
+     "default": "",
+     "category": "Cable",
+     "editable": true,
+     "readonly_runtime": false,
+     "config": false,
+     "doc": "Second end of the cable."
+    },
+    {
+     "type": "property",
+     "name": "Thickness",
+     "display": "Thickness",
+     "ctype": "float",
+     "default": "4.f",
+     "category": "Cable|Look",
+     "editable": true,
+     "readonly_runtime": false,
+     "config": false,
+     "doc": "Cable diameter in centimeters."
+    },
+    {
+     "type": "property",
+     "name": "LiveColor",
+     "display": "Live Color",
+     "ctype": "FLinearColor",
+     "default": "FLinearColor(0.1f, 1.f, 0.25f)",
+     "category": "Cable|Look",
+     "editable": true,
+     "readonly_runtime": false,
+     "config": false,
+     "doc": "Color while power flows through the cable."
+    },
+    {
+     "type": "property",
+     "name": "DeadColor",
+     "display": "Dead Color",
+     "ctype": "FLinearColor",
+     "default": "FLinearColor(0.03f, 0.03f, 0.03f)",
+     "category": "Cable|Look",
+     "editable": true,
+     "readonly_runtime": false,
+     "config": false,
+     "doc": "Color while the cable is dead."
+    },
+    {
+     "type": "property",
+     "name": "CableMaterial",
+     "display": "Cable Material",
+     "ctype": "TObjectPtr<UMaterialInterface>",
+     "default": "",
+     "category": "Cable|Look",
+     "editable": true,
+     "readonly_runtime": false,
+     "config": false,
+     "doc": "Material of the cable. It should expose the vector parameters \"Color\" and \"Emissive\". Uses a plain engine material when empty."
+    },
+    {
+     "type": "property",
+     "name": "bConnectOnBeginPlay",
+     "display": "Connect On Begin Play",
+     "ctype": "bool",
+     "default": "true",
+     "category": "Cable",
+     "editable": true,
+     "readonly_runtime": false,
+     "config": false,
+     "doc": "If true the cable creates the electrical connection itself when the game starts. Disable it if you wire the nodes in another way."
+    },
+    {
+     "type": "function",
+     "name": "RefreshCable",
+     "display": "Refresh Cable",
+     "signature": "void RefreshCable()",
+     "pure": false,
+     "doc": "Recomputes the cable geometry from the two end points.",
+     "static": false
+    },
+    {
+     "type": "function",
+     "name": "IsLive",
+     "display": "Is Live",
+     "signature": "bool IsLive() const",
+     "pure": true,
+     "doc": "True while both ends are connected and energized.",
+     "static": false
+    },
+    {
+     "type": "property",
+     "name": "CableMesh",
+     "display": "Cable Mesh",
+     "ctype": "TObjectPtr<UStaticMeshComponent>",
+     "default": "",
+     "category": "Cable",
+     "editable": false,
+     "readonly_runtime": true,
+     "config": false,
+     "doc": "The visible cable, stretched between the two ends."
+    }
+   ],
+   "kind": "class",
+   "file": "VWVCableActor.h"
+  },
+  {
+   "name": "FVWVConnectionTarget",
+   "parent": null,
+   "display": null,
+   "doc": "Designer-time reference to another node: an Actor and, if it has several nodes, the name of one of its node components.",
+   "members": [
+    {
+     "type": "property",
+     "name": "Actor",
+     "display": "Actor",
+     "ctype": "TSoftObjectPtr<AActor>",
+     "default": "",
+     "category": "Voltweave",
+     "editable": true,
+     "readonly_runtime": false,
+     "config": false,
+     "doc": "Actor that owns the node to connect to."
+    },
+    {
+     "type": "property",
+     "name": "ComponentName",
+     "display": "Component Name",
+     "ctype": "FName",
+     "default": "",
+     "category": "Voltweave",
+     "editable": true,
+     "readonly_runtime": false,
+     "config": false,
+     "doc": "Name of the node component on that Actor. Leave empty to use its first node."
+    }
+   ],
+   "kind": "struct",
+   "file": "VWVNodeComponent.h"
+  },
+  {
+   "name": "FVWVFeedbackLook",
+   "parent": null,
+   "display": null,
+   "doc": "How lights and materials look in one indicator state.",
+   "members": [
+    {
+     "type": "property",
+     "name": "Color",
+     "display": "Color",
+     "ctype": "FLinearColor",
+     "default": "FLinearColor::White",
+     "category": "Look",
+     "editable": true,
+     "readonly_runtime": false,
+     "config": false,
+     "doc": "Color of lights and of the material color/emissive parameters."
+    },
+    {
+     "type": "property",
+     "name": "LightIntensity",
+     "display": "Light Intensity",
+     "ctype": "float",
+     "default": "1.f",
+     "category": "Look",
+     "editable": true,
+     "readonly_runtime": false,
+     "config": false,
+     "doc": "Multiplier of the design-time intensity of affected lights. 0 turns them off."
+    },
+    {
+     "type": "property",
+     "name": "Emissive",
+     "display": "Emissive",
+     "ctype": "float",
+     "default": "1.f",
+     "category": "Look",
+     "editable": true,
+     "readonly_runtime": false,
+     "config": false,
+     "doc": "Multiplier of the emissive material parameter. 0 means not glowing."
+    }
+   ],
+   "kind": "struct",
+   "file": "VWVFeedbackComponent.h"
+  },
+  {
+   "name": "FVWVNetworkInfo",
+   "parent": null,
+   "display": null,
+   "doc": "Aggregated information about one isolated network (a set of connected, conducting nodes).",
+   "members": [
+    {
+     "type": "property",
+     "name": "NetworkId",
+     "display": "Network Id",
+     "ctype": "int32",
+     "default": "INDEX_NONE",
+     "category": "Voltweave",
+     "editable": false,
+     "readonly_runtime": false,
+     "config": false,
+     "doc": "Stable while the network keeps its lowest node. Not a persistent identifier."
+    },
+    {
+     "type": "property",
+     "name": "State",
+     "display": "State",
+     "ctype": "EVWVNetworkState",
+     "default": "EVWVNetworkState::Idle",
+     "category": "Voltweave",
+     "editable": false,
+     "readonly_runtime": false,
+     "config": false,
+     "doc": "Overall state of the network."
+    },
+    {
+     "type": "property",
+     "name": "NodeCount",
+     "display": "Node Count",
+     "ctype": "int32",
+     "default": "0",
+     "category": "Voltweave",
+     "editable": false,
+     "readonly_runtime": false,
+     "config": false,
+     "doc": "Number of nodes in the network."
+    },
+    {
+     "type": "property",
+     "name": "SupplyCapacityWatts",
+     "display": "Supply Capacity Watts",
+     "ctype": "float",
+     "default": "0.f",
+     "category": "Voltweave",
+     "editable": false,
+     "readonly_runtime": false,
+     "config": false,
+     "doc": "Maximum watts all sources of the network can deliver."
+    },
+    {
+     "type": "property",
+     "name": "DemandWatts",
+     "display": "Demand Watts",
+     "ctype": "float",
+     "default": "0.f",
+     "category": "Voltweave",
+     "editable": false,
+     "readonly_runtime": false,
+     "config": false,
+     "doc": "Watts requested by all consumers."
+    },
+    {
+     "type": "property",
+     "name": "DeliveredWatts",
+     "display": "Delivered Watts",
+     "ctype": "float",
+     "default": "0.f",
+     "category": "Voltweave",
+     "editable": false,
+     "readonly_runtime": false,
+     "config": false,
+     "doc": "Watts granted to consumers."
+    },
+    {
+     "type": "property",
+     "name": "BatteryDischargeWatts",
+     "display": "Battery Discharge Watts",
+     "ctype": "float",
+     "default": "0.f",
+     "category": "Voltweave",
+     "editable": false,
+     "readonly_runtime": false,
+     "config": false,
+     "doc": "Power currently drawn from batteries."
+    },
+    {
+     "type": "property",
+     "name": "BatteryChargeWatts",
+     "display": "Battery Charge Watts",
+     "ctype": "float",
+     "default": "0.f",
+     "category": "Voltweave",
+     "editable": false,
+     "readonly_runtime": false,
+     "config": false,
+     "doc": "Power currently going into batteries."
+    },
+    {
+     "type": "property",
+     "name": "bEnergized",
+     "display": "Energized",
+     "ctype": "bool",
+     "default": "false",
+     "category": "Voltweave",
+     "editable": false,
+     "readonly_runtime": false,
+     "config": false,
+     "doc": "True if anything in the network can currently supply power."
+    }
+   ],
+   "kind": "struct",
+   "file": "VWVTypes.h"
+  },
+  {
+   "name": "UVWVBatteryComponent",
+   "parent": "UVWVNodeComponent",
+   "display": "Voltweave Battery",
+   "doc": "Stores energy. Charges from surplus power and discharges when the sources of its network cannot cover the demand. Energy is measured in watt-seconds (joules): a 100 W load drains 6000 Ws in one minute.",
+   "members": [
+    {
+     "type": "property",
+     "name": "CapacityWattSeconds",
+     "display": "Capacity Watt Seconds",
+     "ctype": "float",
+     "default": "60000.f",
+     "category": "Voltweave|Battery",
+     "editable": true,
+     "readonly_runtime": false,
+     "config": false,
+     "doc": "Total capacity in watt-seconds."
+    },
+    {
+     "type": "property",
+     "name": "InitialChargeFraction",
+     "display": "Initial Charge Fraction",
+     "ctype": "float",
+     "default": "1.f",
+     "category": "Voltweave|Battery",
+     "editable": true,
+     "readonly_runtime": false,
+     "config": false,
+     "doc": "Charge level the battery starts with, as a fraction of its capacity."
+    },
+    {
+     "type": "property",
+     "name": "MaxChargeWatts",
+     "display": "Max Charge Watts",
+     "ctype": "float",
+     "default": "500.f",
+     "category": "Voltweave|Battery",
+     "editable": true,
+     "readonly_runtime": false,
+     "config": false,
+     "doc": "Maximum power drawn from the network while charging."
+    },
+    {
+     "type": "property",
+     "name": "MaxDischargeWatts",
+     "display": "Max Discharge Watts",
+     "ctype": "float",
+     "default": "1000.f",
+     "category": "Voltweave|Battery",
+     "editable": true,
+     "readonly_runtime": false,
+     "config": false,
+     "doc": "Maximum power the battery can deliver."
+    },
+    {
+     "type": "property",
+     "name": "ChargeEfficiency",
+     "display": "Charge Efficiency",
+     "ctype": "float",
+     "default": "0.9f",
+     "category": "Voltweave|Battery",
+     "editable": true,
+     "readonly_runtime": false,
+     "config": false,
+     "doc": "Fraction of the drawn charging power that ends up stored (1 = lossless)."
+    },
+    {
+     "type": "property",
+     "name": "bChargingAllowed",
+     "display": "Charging Allowed",
+     "ctype": "bool",
+     "default": "true",
+     "category": "Voltweave|Battery",
+     "editable": true,
+     "readonly_runtime": false,
+     "config": false,
+     "doc": "If false the battery never charges."
+    },
+    {
+     "type": "property",
+     "name": "bDischargingAllowed",
+     "display": "Discharging Allowed",
+     "ctype": "bool",
+     "default": "true",
+     "category": "Voltweave|Battery",
+     "editable": true,
+     "readonly_runtime": false,
+     "config": false,
+     "doc": "If false the battery never discharges (it only stores)."
+    },
+    {
+     "type": "function",
+     "name": "SetChargingAllowed",
+     "display": "Set Charging Allowed",
+     "signature": "void SetChargingAllowed(bool bAllowed)",
+     "pure": false,
+     "doc": "Allows or forbids charging from surplus power. Server only.",
+     "static": false
+    },
+    {
+     "type": "function",
+     "name": "SetDischargingAllowed",
+     "display": "Set Discharging Allowed",
+     "signature": "void SetDischargingAllowed(bool bAllowed)",
+     "pure": false,
+     "doc": "Allows or forbids discharging into the network. Server only.",
+     "static": false
+    },
+    {
+     "type": "function",
+     "name": "SetStoredEnergy",
+     "display": "Set Stored Energy",
+     "signature": "void SetStoredEnergy(float NewStoredWattSeconds)",
+     "pure": false,
+     "doc": "Sets the stored energy directly (watt-seconds). Server only.",
+     "static": false
+    },
+    {
+     "type": "function",
+     "name": "GetStoredEnergy",
+     "display": "Get Stored Energy",
+     "signature": "float GetStoredEnergy() const",
+     "pure": true,
+     "doc": "Stored energy in watt-seconds.",
+     "static": false
+    },
+    {
+     "type": "function",
+     "name": "GetChargeFraction",
+     "display": "Get Charge Fraction",
+     "signature": "float GetChargeFraction() const",
+     "pure": true,
+     "doc": "Charge level in [0..1].",
+     "static": false
+    },
+    {
+     "type": "function",
+     "name": "GetBatteryState",
+     "display": "Get Battery State",
+     "signature": "EVWVBatteryState GetBatteryState() const",
+     "pure": true,
+     "doc": "Current state: idle, charging, discharging, full or empty.",
+     "static": false
+    },
+    {
+     "type": "function",
+     "name": "GetPowerWatts",
+     "display": "Get Power Watts",
+     "signature": "float GetPowerWatts() const",
+     "pure": true,
+     "doc": "Power flowing right now: positive = discharging into the network, negative = charging.",
+     "static": false
+    },
+    {
+     "type": "function",
+     "name": "GetSecondsUntilEmpty",
+     "display": "Get Seconds Until Empty",
+     "signature": "float GetSecondsUntilEmpty() const",
+     "pure": true,
+     "doc": "Estimated seconds until empty at the current discharge rate, or -1 if not discharging.",
+     "static": false
+    },
+    {
+     "type": "event",
+     "name": "OnBatteryStateChanged",
+     "display": "On Battery State Changed",
+     "ctype": "FVWVBatteryStateChanged",
+     "default": "",
+     "category": "Voltweave|Events",
+     "editable": false,
+     "readonly_runtime": false,
+     "config": false,
+     "doc": "Fires on server and clients when the battery changes between charging, discharging, full and empty."
+    },
+    {
+     "type": "property",
+     "name": "StoredWattSeconds",
+     "display": "Stored Watt Seconds",
+     "ctype": "float",
+     "default": "0.f",
+     "category": "Voltweave|Runtime State",
+     "editable": false,
+     "readonly_runtime": true,
+     "config": false,
+     "doc": "Live value in watt-seconds, read only."
+    },
+    {
+     "type": "property",
+     "name": "BatteryState",
+     "display": "Battery State",
+     "ctype": "EVWVBatteryState",
+     "default": "EVWVBatteryState::Idle",
+     "category": "Voltweave|Runtime State",
+     "editable": false,
+     "readonly_runtime": true,
+     "config": false,
+     "doc": "Live value, read only."
+    },
+    {
+     "type": "property",
+     "name": "PowerWatts",
+     "display": "Power Watts",
+     "ctype": "float",
+     "default": "0.f",
+     "category": "Voltweave|Runtime State",
+     "editable": false,
+     "readonly_runtime": true,
+     "config": false,
+     "doc": "Live value in watts (positive = discharging), read only."
+    }
+   ],
+   "kind": "class",
+   "file": "VWVBatteryComponent.h"
+  },
+  {
+   "name": "UVWVBlueprintLibrary",
+   "parent": "UBlueprintFunctionLibrary",
+   "display": null,
+   "doc": "Blueprint helpers for working with the Voltweave without touching components directly.",
+   "members": [
+    {
+     "type": "function",
+     "name": "GetVoltweaveGrid",
+     "display": "Get Voltweave Grid",
+     "signature": "static UVWVGridSubsystem* GetVoltweaveGrid(const UObject* WorldContextObject)",
+     "pure": true,
+     "doc": "The grid of the world the context object lives in.",
+     "static": true
+    },
+    {
+     "type": "function",
+     "name": "FindGridNode",
+     "display": "Find Grid Node",
+     "signature": "static UVWVNodeComponent* FindGridNode(AActor* Actor, TSubclassOf<UVWVNodeComponent> NodeClass)",
+     "pure": true,
+     "doc": "Returns the first node of the given type found on an Actor.",
+     "static": true
+    },
+    {
+     "type": "function",
+     "name": "GetGridNodes",
+     "display": "Get Grid Nodes",
+     "signature": "static TArray<UVWVNodeComponent*> GetGridNodes(AActor* Actor)",
+     "pure": true,
+     "doc": "Returns every grid node on an Actor.",
+     "static": true
+    },
+    {
+     "type": "function",
+     "name": "AddGridNodeToActor",
+     "display": "Add Grid Node To Actor",
+     "signature": "static UVWVNodeComponent* AddGridNodeToActor(AActor* Actor, TSubclassOf<UVWVNodeComponent> NodeClass, FName ComponentName = NAME_None)",
+     "pure": false,
+     "doc": "Makes an existing Actor part of the grid by adding a node component to it at runtime. Server only. Returns the new node.",
+     "static": true
+    },
+    {
+     "type": "function",
+     "name": "ConnectActors",
+     "display": "Connect Actors",
+     "signature": "static bool ConnectActors(AActor* ActorA, AActor* ActorB)",
+     "pure": false,
+     "doc": "Wires the first node of Actor A to the first node of Actor B. Server only.",
+     "static": true
+    },
+    {
+     "type": "function",
+     "name": "DisconnectActors",
+     "display": "Disconnect Actors",
+     "signature": "static bool DisconnectActors(AActor* ActorA, AActor* ActorB)",
+     "pure": false,
+     "doc": "Removes the wire between the first nodes of the two Actors. Server only.",
+     "static": true
+    },
+    {
+     "type": "function",
+     "name": "IsActorPowered",
+     "display": "Is Actor Powered",
+     "signature": "static bool IsActorPowered(AActor* Actor)",
+     "pure": true,
+     "doc": "True if any grid node of the Actor receives power. Works for consumers (powered or brownout) and passive nodes (energized).",
+     "static": true
+    },
+    {
+     "type": "function",
+     "name": "ConsumerStateToText",
+     "display": "Consumer State To Text",
+     "signature": "static FText ConsumerStateToText(EVWVConsumerState State)",
+     "pure": true,
+     "doc": "Readable name of a consumer state, for UI.",
+     "static": true
+    },
+    {
+     "type": "function",
+     "name": "NetworkStateToText",
+     "display": "Network State To Text",
+     "signature": "static FText NetworkStateToText(EVWVNetworkState State)",
+     "pure": true,
+     "doc": "Display text for a network state, for example for a HUD.",
+     "static": true
+    },
+    {
+     "type": "function",
+     "name": "ProtectionStateToText",
+     "display": "Protection State To Text",
+     "signature": "static FText ProtectionStateToText(EVWVProtectionState State)",
+     "pure": true,
+     "doc": "Display text for a protection device state.",
+     "static": true
+    },
+    {
+     "type": "function",
+     "name": "BatteryStateToText",
+     "display": "Battery State To Text",
+     "signature": "static FText BatteryStateToText(EVWVBatteryState State)",
+     "pure": true,
+     "doc": "Display text for a battery state.",
+     "static": true
+    },
+    {
+     "type": "function",
+     "name": "FormatWatts",
+     "display": "Format Watts",
+     "signature": "static FText FormatWatts(float Watts)",
+     "pure": true,
+     "doc": "Formats watts for UI, e.g. 1500 -> \"1.5 kW\".",
+     "static": true
+    }
+   ],
+   "kind": "class",
+   "file": "VWVBlueprintLibrary.h"
+  },
+  {
+   "name": "UVWVConsumerComponent",
+   "parent": "UVWVNodeComponent",
+   "display": "Voltweave Power Consumer",
+   "doc": "Draws power from the grid (light, machine, door, turret...).",
+   "members": [
+    {
+     "type": "property",
+     "name": "RequestedWatts",
+     "display": "Requested Watts",
+     "ctype": "float",
+     "default": "100.f",
+     "category": "Voltweave|Consumer",
+     "editable": true,
+     "readonly_runtime": false,
+     "config": false,
+     "doc": "Power the consumer wants in watts while switched on."
+    },
+    {
+     "type": "property",
+     "name": "bSwitchedOn",
+     "display": "Switched On",
+     "ctype": "bool",
+     "default": "true",
+     "category": "Voltweave|Consumer",
+     "editable": true,
+     "readonly_runtime": false,
+     "config": false,
+     "doc": "Whether the consumer is switched on and asks for power."
+    },
+    {
+     "type": "property",
+     "name": "Priority",
+     "display": "Priority",
+     "ctype": "int32",
+     "default": "0",
+     "category": "Voltweave|Consumer",
+     "editable": true,
+     "readonly_runtime": false,
+     "config": false,
+     "doc": "Lower values are served first when power is short (0 = most important). Only used with the Priority allocation policy."
+    },
+    {
+     "type": "property",
+     "name": "bAllowPartialPower",
+     "display": "Allow Partial Power",
+     "ctype": "bool",
+     "default": "true",
+     "category": "Voltweave|Consumer",
+     "editable": true,
+     "readonly_runtime": false,
+     "config": false,
+     "doc": "If false the consumer only runs with its full demand satisfied (it is shed completely otherwise). If true it can brown out."
+    },
+    {
+     "type": "property",
+     "name": "MinOperatingFraction",
+     "display": "Min Operating Fraction",
+     "ctype": "float",
+     "default": "0.f",
+     "category": "Voltweave|Consumer",
+     "editable": true,
+     "readonly_runtime": false,
+     "config": false,
+     "doc": "Fraction of the demand below which the consumer gets no power at all (it could not operate anyway)."
+    },
+    {
+     "type": "function",
+     "name": "SetSwitchedOn",
+     "display": "Set Switched On",
+     "signature": "void SetSwitchedOn(bool bNewSwitchedOn)",
+     "pure": false,
+     "doc": "Switches the consumer on or off. Server only.",
+     "static": false
+    },
+    {
+     "type": "function",
+     "name": "SetRequestedWatts",
+     "display": "Set Requested Watts",
+     "signature": "void SetRequestedWatts(float NewRequestedWatts)",
+     "pure": false,
+     "doc": "Changes the requested power. Server only.",
+     "static": false
+    },
+    {
+     "type": "function",
+     "name": "GetPowerState",
+     "display": "Get Power State",
+     "signature": "EVWVConsumerState GetPowerState() const",
+     "pure": true,
+     "doc": "Current state: off, unpowered, underpowered (brownout) or powered.",
+     "static": false
+    },
+    {
+     "type": "function",
+     "name": "GetGrantedWatts",
+     "display": "Get Granted Watts",
+     "signature": "float GetGrantedWatts() const",
+     "pure": true,
+     "doc": "Power currently received in watts.",
+     "static": false
+    },
+    {
+     "type": "function",
+     "name": "GetSatisfaction",
+     "display": "Get Satisfaction",
+     "signature": "float GetSatisfaction() const",
+     "pure": true,
+     "doc": "Received / requested power in [0..1]. 1 when powered, 0 when off or unpowered.",
+     "static": false
+    },
+    {
+     "type": "function",
+     "name": "IsPowered",
+     "display": "Is Powered",
+     "signature": "bool IsPowered() const",
+     "pure": true,
+     "doc": "True while the consumer receives its full demand.",
+     "static": false
+    },
+    {
+     "type": "function",
+     "name": "HasPower",
+     "display": "Has Power",
+     "signature": "bool HasPower() const",
+     "pure": true,
+     "doc": "True when the consumer receives any power (Powered or Underpowered).",
+     "static": false
+    },
+    {
+     "type": "event",
+     "name": "OnPowerStateChanged",
+     "display": "On Power State Changed",
+     "ctype": "FVWVConsumerStateChanged",
+     "default": "",
+     "category": "Voltweave|Events",
+     "editable": false,
+     "readonly_runtime": false,
+     "config": false,
+     "doc": "Fires on server and clients when the power state changes."
+    },
+    {
+     "type": "event",
+     "name": "OnPowerLevelChanged",
+     "display": "On Power Level Changed",
+     "ctype": "FVWVConsumerPowerLevelChanged",
+     "default": "",
+     "category": "Voltweave|Events",
+     "editable": false,
+     "readonly_runtime": false,
+     "config": false,
+     "doc": "Fired when the received fraction changes noticeably (at least 1 percent)."
+    },
+    {
+     "type": "property",
+     "name": "PowerState",
+     "display": "Power State",
+     "ctype": "EVWVConsumerState",
+     "default": "EVWVConsumerState::Off",
+     "category": "Voltweave|Runtime State",
+     "editable": false,
+     "readonly_runtime": true,
+     "config": false,
+     "doc": "Live value, read only."
+    },
+    {
+     "type": "property",
+     "name": "GrantedWatts",
+     "display": "Granted Watts",
+     "ctype": "float",
+     "default": "0.f",
+     "category": "Voltweave|Runtime State",
+     "editable": false,
+     "readonly_runtime": true,
+     "config": false,
+     "doc": "Live value in watts, read only."
+    }
+   ],
+   "kind": "class",
+   "file": "VWVConsumerComponent.h"
+  },
+  {
+   "name": "UVWVFeedbackComponent",
+   "parent": "UActorComponent",
+   "display": "Voltweave State Feedback",
+   "doc": "Makes an Actor visibly react to the state of one of its grid nodes, without any Blueprint scripting. Drives lights (color, intensity) and mesh materials (color and emissive parameters) and works on the server and on clients, because it only reads replicated state.",
+   "members": [
+    {
+     "type": "property",
+     "name": "Node",
+     "display": "Node",
+     "ctype": "FComponentReference",
+     "default": "",
+     "category": "Feedback",
+     "editable": true,
+     "readonly_runtime": false,
+     "config": false,
+     "doc": "The node to watch. Leave empty to use the first grid node found on this Actor."
+    },
+    {
+     "type": "property",
+     "name": "Targets",
+     "display": "Targets",
+     "ctype": "TArray<FComponentReference>",
+     "default": "",
+     "category": "Feedback",
+     "editable": true,
+     "readonly_runtime": false,
+     "config": false,
+     "doc": "Lights and meshes to drive. Leave empty to drive every light of the Actor."
+    },
+    {
+     "type": "property",
+     "name": "Preset",
+     "display": "Preset",
+     "ctype": "EVWVFeedbackPreset",
+     "default": "EVWVFeedbackPreset::IndicatorLED",
+     "category": "Feedback",
+     "editable": true,
+     "readonly_runtime": false,
+     "config": false,
+     "doc": "Applies one of the ready-made looks to the four states below."
+    },
+    {
+     "type": "property",
+     "name": "OffLook",
+     "display": "Off Look",
+     "ctype": "FVWVFeedbackLook",
+     "default": "",
+     "category": "Feedback|Looks",
+     "editable": true,
+     "readonly_runtime": false,
+     "config": false,
+     "doc": "Look while the node is off or unpowered."
+    },
+    {
+     "type": "property",
+     "name": "GoodLook",
+     "display": "Good Look",
+     "ctype": "FVWVFeedbackLook",
+     "default": "",
+     "category": "Feedback|Looks",
+     "editable": true,
+     "readonly_runtime": false,
+     "config": false,
+     "doc": "Look while the node is working normally."
+    },
+    {
+     "type": "property",
+     "name": "WarningLook",
+     "display": "Warning Look",
+     "ctype": "FVWVFeedbackLook",
+     "default": "",
+     "category": "Feedback|Looks",
+     "editable": true,
+     "readonly_runtime": false,
+     "config": false,
+     "doc": "Look while the node is in a brownout or overheating."
+    },
+    {
+     "type": "property",
+     "name": "FaultLook",
+     "display": "Fault Look",
+     "ctype": "FVWVFeedbackLook",
+     "default": "",
+     "category": "Feedback|Looks",
+     "editable": true,
+     "readonly_runtime": false,
+     "config": false,
+     "doc": "Look while the node is in blackout or tripped."
+    },
+    {
+     "type": "property",
+     "name": "bFlickerOnWarning",
+     "display": "Flicker On Warning",
+     "ctype": "bool",
+     "default": "false",
+     "category": "Feedback|Looks",
+     "editable": true,
+     "readonly_runtime": false,
+     "config": false,
+     "doc": "Flicker while the node is in the warning state (a brownout for consumers)."
+    },
+    {
+     "type": "property",
+     "name": "bScaleBySatisfaction",
+     "display": "Scale By Satisfaction",
+     "ctype": "bool",
+     "default": "false",
+     "category": "Feedback|Looks",
+     "editable": true,
+     "readonly_runtime": false,
+     "config": false,
+     "doc": "For consumers: additionally scale light intensity and emissive by the received fraction of the demand."
+    },
+    {
+     "type": "property",
+     "name": "ColorParameterName",
+     "display": "Color Parameter Name",
+     "ctype": "FName",
+     "default": "TEXT(\"Color\")",
+     "category": "Feedback|Materials",
+     "editable": true,
+     "readonly_runtime": false,
+     "config": false,
+     "doc": "Name of the vector material parameter that receives the color."
+    },
+    {
+     "type": "property",
+     "name": "EmissiveParameterName",
+     "display": "Emissive Parameter Name",
+     "ctype": "FName",
+     "default": "TEXT(\"Emissive\")",
+     "category": "Feedback|Materials",
+     "editable": true,
+     "readonly_runtime": false,
+     "config": false,
+     "doc": "Name of the vector material parameter that receives color times emissive strength."
+    },
+    {
+     "type": "property",
+     "name": "EmissiveStrength",
+     "display": "Emissive Strength",
+     "ctype": "float",
+     "default": "4.f",
+     "category": "Feedback|Materials",
+     "editable": true,
+     "readonly_runtime": false,
+     "config": false,
+     "doc": "Global multiplier of the emissive strength."
+    },
+    {
+     "type": "property",
+     "name": "BlendSpeed",
+     "display": "Blend Speed",
+     "ctype": "float",
+     "default": "10.f",
+     "category": "Feedback",
+     "editable": true,
+     "readonly_runtime": false,
+     "config": false,
+     "doc": "How quickly looks blend from one state to the next (higher = faster)."
+    },
+    {
+     "type": "function",
+     "name": "ApplyPreset",
+     "display": "Apply Preset",
+     "signature": "void ApplyPreset(EVWVFeedbackPreset NewPreset)",
+     "pure": false,
+     "doc": "Overwrites the four looks with the values of a preset.",
+     "static": false
+    },
+    {
+     "type": "function",
+     "name": "GetLookForState",
+     "display": "Get Look For State",
+     "signature": "FVWVFeedbackLook GetLookForState(EVWVIndicatorState State) const",
+     "pure": true,
+     "doc": "The look for a given state.",
+     "static": false
+    },
+    {
+     "type": "function",
+     "name": "Rebind",
+     "display": "Rebind",
+     "signature": "void Rebind()",
+     "pure": false,
+     "doc": "Re-reads the node and the target list. Call this after adding components at runtime.",
+     "static": false
+    }
+   ],
+   "kind": "class",
+   "file": "VWVFeedbackComponent.h"
+  },
+  {
+   "name": "UVWVGridSubsystem",
+   "parent": "UTickableWorldSubsystem",
+   "display": null,
+   "doc": "Owns the electrical simulation of one world. Nodes register themselves on BeginPlay. The subsystem is event driven: it re-solves right away when something changes and only keeps stepping in time while batteries or overheating protection devices need it. Only the server (or a standalone game) solves; clients receive replicated results.",
+   "members": [
+    {
+     "type": "function",
+     "name": "SolveNow",
+     "display": "Solve Now",
+     "signature": "void SolveNow()",
+     "pure": false,
+     "doc": "Solves immediately instead of waiting for the next tick. Server only.",
+     "static": false
+    },
+    {
+     "type": "function",
+     "name": "GetNetworks",
+     "display": "Get Networks",
+     "signature": "TArray<FVWVNetworkInfo> GetNetworks() const",
+     "pure": false,
+     "doc": "All networks found by the last solve. Server only.",
+     "static": false
+    },
+    {
+     "type": "function",
+     "name": "GetNetworkInfo",
+     "display": "Get Network Info",
+     "signature": "bool GetNetworkInfo(int32 NetworkId, FVWVNetworkInfo& OutInfo) const",
+     "pure": false,
+     "doc": "Information about the network a node belongs to. Server only.",
+     "static": false
+    },
+    {
+     "type": "function",
+     "name": "GetAllNodes",
+     "display": "Get All Nodes",
+     "signature": "TArray<UVWVNodeComponent*> GetAllNodes() const",
+     "pure": false,
+     "doc": "All nodes currently registered in this world.",
+     "static": false
+    },
+    {
+     "type": "function",
+     "name": "GetNodeCount",
+     "display": "Get Node Count",
+     "signature": "int32 GetNodeCount() const",
+     "pure": false,
+     "doc": "Number of nodes registered in this world.",
+     "static": false
+    },
+    {
+     "type": "function",
+     "name": "GetLastSolveTimeMs",
+     "display": "Get Last Solve Time Ms",
+     "signature": "float GetLastSolveTimeMs() const",
+     "pure": false,
+     "doc": "Duration of the last solve in milliseconds.",
+     "static": false
+    },
+    {
+     "type": "function",
+     "name": "IsSimulating",
+     "display": "Is Simulating",
+     "signature": "bool IsSimulating() const",
+     "pure": false,
+     "doc": "True if this world instance runs the simulation (server or standalone).",
+     "static": false
+    },
+    {
+     "type": "event",
+     "name": "OnNetworkStateChanged",
+     "display": "On Network State Changed",
+     "ctype": "FVWVNetworkStateChanged",
+     "default": "",
+     "category": "Voltweave|Events",
+     "editable": false,
+     "readonly_runtime": false,
+     "config": false,
+     "doc": "Fired when a network changes its health state, e.g. becomes a blackout."
+    },
+    {
+     "type": "event",
+     "name": "OnGridSolved",
+     "display": "On Grid Solved",
+     "ctype": "FVWVGridSolved",
+     "default": "",
+     "category": "Voltweave|Events",
+     "editable": false,
+     "readonly_runtime": false,
+     "config": false,
+     "doc": "Fired after every solve."
+    }
+   ],
+   "kind": "class",
+   "file": "VWVGridSubsystem.h"
+  },
+  {
+   "name": "UVWVNodeComponent",
+   "parent": "USceneComponent",
+   "display": "Voltweave Junction",
+   "doc": "Base of all electrical components and a plain junction/terminal by itself. Add one of the Voltweave components to any Actor (Blueprint or C++) to make it part of the grid. Nodes are wired together with ConnectTo / InitialConnections. The grid is solved on the server only; the results are replicated, so the owning Actor must have replication enabled in multiplayer games.",
+   "members": [
+    {
+     "type": "property",
+     "name": "InitialConnections",
+     "display": "Initial Connections",
+     "ctype": "TArray<FVWVConnectionTarget>",
+     "default": "",
+     "category": "Voltweave|Connections",
+     "editable": true,
+     "readonly_runtime": false,
+     "config": false,
+     "doc": "Nodes this node is wired to when the game starts. Links are bidirectional."
+    },
+    {
+     "type": "function",
+     "name": "ConnectTo",
+     "display": "Connect To",
+     "signature": "bool ConnectTo(UVWVNodeComponent* Other)",
+     "pure": false,
+     "doc": "Wires this node to another one. Server only. Returns false if invalid or already connected.",
+     "static": false
+    },
+    {
+     "type": "function",
+     "name": "DisconnectFrom",
+     "display": "Disconnect From",
+     "signature": "bool DisconnectFrom(UVWVNodeComponent* Other)",
+     "pure": false,
+     "doc": "Removes the wire between this node and another one. Server only.",
+     "static": false
+    },
+    {
+     "type": "function",
+     "name": "DisconnectAll",
+     "display": "Disconnect All",
+     "signature": "void DisconnectAll()",
+     "pure": false,
+     "doc": "Removes every wire of this node. Server only.",
+     "static": false
+    },
+    {
+     "type": "function",
+     "name": "IsConnectedTo",
+     "display": "Is Connected To",
+     "signature": "bool IsConnectedTo(const UVWVNodeComponent* Other) const",
+     "pure": true,
+     "doc": "True if a wire connects this node directly to Other.",
+     "static": false
+    },
+    {
+     "type": "function",
+     "name": "GetConnections",
+     "display": "Get Connections",
+     "signature": "TArray<UVWVNodeComponent*> GetConnections() const",
+     "pure": true,
+     "doc": "All nodes this node is directly wired to. Available on server and clients.",
+     "static": false
+    },
+    {
+     "type": "function",
+     "name": "SetNodeEnabled",
+     "display": "Set Node Enabled",
+     "signature": "void SetNodeEnabled(bool bEnabled)",
+     "pure": false,
+     "doc": "A disabled node does not conduct, like a cut wire. Server only.",
+     "static": false
+    },
+    {
+     "type": "function",
+     "name": "IsNodeEnabled",
+     "display": "Is Node Enabled",
+     "signature": "bool IsNodeEnabled() const",
+     "pure": true,
+     "doc": "False while the node is disabled and acts like a cut wire.",
+     "static": false
+    },
+    {
+     "type": "function",
+     "name": "IsEnergized",
+     "display": "Is Energized",
+     "signature": "bool IsEnergized() const",
+     "pure": true,
+     "doc": "True if this node belongs to a network that has supply available. Available on server and clients.",
+     "static": false
+    },
+    {
+     "type": "function",
+     "name": "GetNetworkId",
+     "display": "Get Network Id",
+     "signature": "int32 GetNetworkId() const",
+     "pure": true,
+     "doc": "Identifier of the network this node currently belongs to. Available on server and clients.",
+     "static": false
+    },
+    {
+     "type": "function",
+     "name": "GetNetworkInfo",
+     "display": "Get Network Info",
+     "signature": "bool GetNetworkInfo(FVWVNetworkInfo& OutInfo) const",
+     "pure": true,
+     "doc": "Aggregated information about this node's network. Server only (returns false on clients).",
+     "static": false
+    },
+    {
+     "type": "function",
+     "name": "HasGridAuthority",
+     "display": "Has Grid Authority",
+     "signature": "bool HasGridAuthority() const",
+     "pure": true,
+     "doc": "True where the grid is simulated: the server or a standalone game.",
+     "static": false
+    },
+    {
+     "type": "event",
+     "name": "OnEnergizedChanged",
+     "display": "On Energized Changed",
+     "ctype": "FVWVNodeEnergizedChanged",
+     "default": "",
+     "category": "Voltweave|Events",
+     "editable": false,
+     "readonly_runtime": false,
+     "config": false,
+     "doc": "Fires on server and clients when the node gains or loses power from its network."
+    },
+    {
+     "type": "function",
+     "name": "GetDebugLabel",
+     "display": "Get Debug Label",
+     "signature": "virtual FString GetDebugLabel() const",
+     "pure": true,
+     "doc": "Short human readable description of the current state, used by debug drawing and logs.",
+     "static": false
+    },
+    {
+     "type": "function",
+     "name": "GetIndicatorState",
+     "display": "Get Indicator State",
+     "signature": "virtual EVWVIndicatorState GetIndicatorState() const",
+     "pure": true,
+     "doc": "Simplified state for indicator lights and UI. Available on server and clients.",
+     "static": false
+    },
+    {
+     "type": "property",
+     "name": "bNodeEnabled",
+     "display": "Node Enabled",
+     "ctype": "bool",
+     "default": "true",
+     "category": "Voltweave",
+     "editable": true,
+     "readonly_runtime": false,
+     "config": false,
+     "doc": "Whether the node takes part in the network. Replicated."
+    },
+    {
+     "type": "property",
+     "name": "bEnergized",
+     "display": "Energized",
+     "ctype": "bool",
+     "default": "false",
+     "category": "Voltweave|Runtime State",
+     "editable": false,
+     "readonly_runtime": true,
+     "config": false,
+     "doc": "Live value, read only."
+    },
+    {
+     "type": "property",
+     "name": "NetworkId",
+     "display": "Network Id",
+     "ctype": "int32",
+     "default": "INDEX_NONE",
+     "category": "Voltweave|Runtime State",
+     "editable": false,
+     "readonly_runtime": true,
+     "config": false,
+     "doc": "Live value, read only."
+    }
+   ],
+   "kind": "class",
+   "file": "VWVNodeComponent.h"
+  },
+  {
+   "name": "UVWVProtectionComponent",
+   "parent": "UVWVNodeComponent",
+   "display": "Voltweave Breaker / Fuse",
+   "doc": "Circuit breaker or fuse. Sits in series in the network and measures the power flowing through it. When the flow exceeds the rating for long enough (inverse-time curve) it opens and cuts off everything behind it.",
+   "members": [
+    {
+     "type": "property",
+     "name": "Kind",
+     "display": "Kind",
+     "ctype": "EVWVProtectionKind",
+     "default": "EVWVProtectionKind::Breaker",
+     "category": "Voltweave|Protection",
+     "editable": true,
+     "readonly_runtime": false,
+     "config": false,
+     "doc": "Breakers can be reset, fuses must be replaced."
+    },
+    {
+     "type": "property",
+     "name": "RatedWatts",
+     "display": "Rated Watts",
+     "ctype": "float",
+     "default": "1000.f",
+     "category": "Voltweave|Protection",
+     "editable": true,
+     "readonly_runtime": false,
+     "config": false,
+     "doc": "Power that may flow through the device continuously. 0 disables the protection."
+    },
+    {
+     "type": "property",
+     "name": "TimeToTripAtDoubleLoad",
+     "display": "Time To Trip At Double Load",
+     "ctype": "float",
+     "default": "3.f",
+     "category": "Voltweave|Protection",
+     "editable": true,
+     "readonly_runtime": false,
+     "config": false,
+     "doc": "Seconds until the device opens when it carries twice its rating. Smaller overloads take longer, bigger ones are faster."
+    },
+    {
+     "type": "property",
+     "name": "InstantTripRatio",
+     "display": "Instant Trip Ratio",
+     "ctype": "float",
+     "default": "4.f",
+     "category": "Voltweave|Protection",
+     "editable": true,
+     "readonly_runtime": false,
+     "config": false,
+     "doc": "Flow as a multiple of the rating at or above which the device opens instantly (short circuit). 0 disables."
+    },
+    {
+     "type": "property",
+     "name": "CoolingTimeSeconds",
+     "display": "Cooling Time Seconds",
+     "ctype": "float",
+     "default": "10.f",
+     "category": "Voltweave|Protection",
+     "editable": true,
+     "readonly_runtime": false,
+     "config": false,
+     "doc": "Seconds the device needs to cool down completely."
+    },
+    {
+     "type": "property",
+     "name": "AutoResetDelaySeconds",
+     "display": "Auto Reset Delay Seconds",
+     "ctype": "float",
+     "default": "0.f",
+     "category": "Voltweave|Protection",
+     "editable": true,
+     "readonly_runtime": false,
+     "config": false,
+     "doc": "Breakers only: seconds after a trip until the breaker closes by itself. 0 = never."
+    },
+    {
+     "type": "property",
+     "name": "State",
+     "display": "State",
+     "ctype": "EVWVProtectionState",
+     "default": "EVWVProtectionState::Closed",
+     "category": "Voltweave|Protection",
+     "editable": true,
+     "readonly_runtime": false,
+     "config": false,
+     "doc": "Initial state. Use Open to start with an opened breaker."
+    },
+    {
+     "type": "function",
+     "name": "OpenBreaker",
+     "display": "Open Breaker",
+     "signature": "bool OpenBreaker()",
+     "pure": false,
+     "doc": "Manually opens a breaker. Server only. Fuses cannot be opened.",
+     "static": false
+    },
+    {
+     "type": "function",
+     "name": "CloseBreaker",
+     "display": "Close Breaker",
+     "signature": "bool CloseBreaker()",
+     "pure": false,
+     "doc": "Manually closes a breaker or resets a tripped one. Server only. Fails for blown fuses.",
+     "static": false
+    },
+    {
+     "type": "function",
+     "name": "ReplaceFuse",
+     "display": "Replace Fuse",
+     "signature": "bool ReplaceFuse()",
+     "pure": false,
+     "doc": "Replaces a blown fuse with a new one. Server only.",
+     "static": false
+    },
+    {
+     "type": "function",
+     "name": "ForceTrip",
+     "display": "Force Trip",
+     "signature": "bool ForceTrip()",
+     "pure": false,
+     "doc": "Forces the device to trip (breaker) or blow (fuse). Server only.",
+     "static": false
+    },
+    {
+     "type": "function",
+     "name": "GetProtectionState",
+     "display": "Get Protection State",
+     "signature": "EVWVProtectionState GetProtectionState() const",
+     "pure": true,
+     "doc": "Current state: closed, tripped or blown.",
+     "static": false
+    },
+    {
+     "type": "function",
+     "name": "IsTrippedOrBlown",
+     "display": "Is Tripped Or Blown",
+     "signature": "bool IsTrippedOrBlown() const",
+     "pure": true,
+     "doc": "True if the device was opened by an overload.",
+     "static": false
+    },
+    {
+     "type": "function",
+     "name": "GetFlowWatts",
+     "display": "Get Flow Watts",
+     "signature": "float GetFlowWatts() const",
+     "pure": true,
+     "doc": "Power currently flowing through the device.",
+     "static": false
+    },
+    {
+     "type": "function",
+     "name": "GetLoadRatio",
+     "display": "Get Load Ratio",
+     "signature": "float GetLoadRatio() const",
+     "pure": true,
+     "doc": "Flow relative to the rating (1 = at the limit).",
+     "static": false
+    },
+    {
+     "type": "function",
+     "name": "GetHeat",
+     "display": "Get Heat",
+     "signature": "float GetHeat() const",
+     "pure": true,
+     "doc": "Accumulated heat in [0..1]. The device opens at 1.",
+     "static": false
+    },
+    {
+     "type": "event",
+     "name": "OnProtectionStateChanged",
+     "display": "On Protection State Changed",
+     "ctype": "FVWVProtectionStateChanged",
+     "default": "",
+     "category": "Voltweave|Events",
+     "editable": false,
+     "readonly_runtime": false,
+     "config": false,
+     "doc": "Fires on server and clients when the device closes, trips or blows."
+    },
+    {
+     "type": "event",
+     "name": "OnTripped",
+     "display": "On Tripped",
+     "ctype": "FVWVProtectionTripped",
+     "default": "",
+     "category": "Voltweave|Events",
+     "editable": false,
+     "readonly_runtime": false,
+     "config": false,
+     "doc": "Fired when the device opened because of an overload."
+    },
+    {
+     "type": "property",
+     "name": "FlowWatts",
+     "display": "Flow Watts",
+     "ctype": "float",
+     "default": "0.f",
+     "category": "Voltweave|Runtime State",
+     "editable": false,
+     "readonly_runtime": true,
+     "config": false,
+     "doc": "Live value in watts, read only."
+    },
+    {
+     "type": "property",
+     "name": "Heat",
+     "display": "Heat",
+     "ctype": "float",
+     "default": "0.f",
+     "category": "Voltweave|Runtime State",
+     "editable": false,
+     "readonly_runtime": true,
+     "config": false,
+     "doc": "Live value in [0..1], read only. The device opens at 1."
+    }
+   ],
+   "kind": "class",
+   "file": "VWVProtectionComponent.h"
+  },
+  {
+   "name": "UVWVSettings",
+   "parent": "UDeveloperSettings",
+   "display": "Voltweave",
+   "doc": "Project-wide settings of the Voltweave plugin (Project Settings > Plugins > Voltweave).",
+   "members": [
+    {
+     "type": "property",
+     "name": "SolverFrequencyHz",
+     "display": "Solver Frequency Hz",
+     "ctype": "float",
+     "default": "20.f",
+     "category": "Solver",
+     "editable": true,
+     "readonly_runtime": false,
+     "config": true,
+     "doc": "How many times per second the network is re-evaluated while something time dependent is happening (battery, overheating protection). Topology and state changes are always solved immediately."
+    },
+    {
+     "type": "property",
+     "name": "AllocationPolicy",
+     "display": "Allocation Policy",
+     "ctype": "EVWVAllocationPolicy",
+     "default": "EVWVAllocationPolicy::Priority",
+     "category": "Solver",
+     "editable": true,
+     "readonly_runtime": false,
+     "config": true,
+     "doc": "How available power is shared when there is not enough for everyone."
+    },
+    {
+     "type": "property",
+     "name": "MaxCascadeIterations",
+     "display": "Max Cascade Iterations",
+     "ctype": "int32",
+     "default": "8",
+     "category": "Solver",
+     "editable": true,
+     "readonly_runtime": false,
+     "config": true,
+     "doc": "Upper bound of re-solves caused by protection devices tripping within one evaluation (cascading trips)."
+    },
+    {
+     "type": "property",
+     "name": "bDrawDebugByDefault",
+     "display": "Draw Debug By Default",
+     "ctype": "bool",
+     "default": "false",
+     "category": "Debug",
+     "editable": true,
+     "readonly_runtime": false,
+     "config": true,
+     "doc": "Draw nodes, links and their state in the world while playing (also toggled by the console variable Voltweave.Debug.Draw)."
+    },
+    {
+     "type": "property",
+     "name": "bLogNetworkEvents",
+     "display": "Log Network Events",
+     "ctype": "bool",
+     "default": "false",
+     "category": "Debug",
+     "editable": true,
+     "readonly_runtime": false,
+     "config": true,
+     "doc": "Writes network changes (blackouts, trips) to the log."
+    }
+   ],
+   "kind": "class",
+   "file": "VWVSettings.h"
+  },
+  {
+   "name": "UVWVSourceComponent",
+   "parent": "UVWVNodeComponent",
+   "display": "Voltweave Power Source",
+   "doc": "Produces power (generator, solar panel, mains connection...).",
+   "members": [
+    {
+     "type": "property",
+     "name": "MaxOutputWatts",
+     "display": "Max Output Watts",
+     "ctype": "float",
+     "default": "1000.f",
+     "category": "Voltweave|Source",
+     "editable": true,
+     "readonly_runtime": false,
+     "config": false,
+     "doc": "Maximum power the source can deliver in watts."
+    },
+    {
+     "type": "property",
+     "name": "bRunning",
+     "display": "Running",
+     "ctype": "bool",
+     "default": "true",
+     "category": "Voltweave|Source",
+     "editable": true,
+     "readonly_runtime": false,
+     "config": false,
+     "doc": "Whether the source is running."
+    },
+    {
+     "type": "property",
+     "name": "OutputScale",
+     "display": "Output Scale",
+     "ctype": "float",
+     "default": "1.f",
+     "category": "Voltweave|Source",
+     "editable": true,
+     "readonly_runtime": false,
+     "config": false,
+     "doc": "Scales the capacity between 0 and 1, for example to model a throttled generator or the sun's angle."
+    },
+    {
+     "type": "function",
+     "name": "SetRunning",
+     "display": "Set Running",
+     "signature": "void SetRunning(bool bNewRunning)",
+     "pure": false,
+     "doc": "Starts or stops the source. Server only.",
+     "static": false
+    },
+    {
+     "type": "function",
+     "name": "SetMaxOutputWatts",
+     "display": "Set Max Output Watts",
+     "signature": "void SetMaxOutputWatts(float NewMaxOutputWatts)",
+     "pure": false,
+     "doc": "Changes the maximum output. Server only.",
+     "static": false
+    },
+    {
+     "type": "function",
+     "name": "SetOutputScale",
+     "display": "Set Output Scale",
+     "signature": "void SetOutputScale(float NewScale)",
+     "pure": false,
+     "doc": "Changes the capacity scale in [0..1]. Server only.",
+     "static": false
+    },
+    {
+     "type": "function",
+     "name": "GetAvailableWatts",
+     "display": "Get Available Watts",
+     "signature": "float GetAvailableWatts() const",
+     "pure": true,
+     "doc": "Capacity the source offers right now (0 if stopped or disabled).",
+     "static": false
+    },
+    {
+     "type": "function",
+     "name": "GetOutputWatts",
+     "display": "Get Output Watts",
+     "signature": "float GetOutputWatts() const",
+     "pure": true,
+     "doc": "Power the source currently delivers.",
+     "static": false
+    },
+    {
+     "type": "function",
+     "name": "GetLoadFraction",
+     "display": "Get Load Fraction",
+     "signature": "float GetLoadFraction() const",
+     "pure": true,
+     "doc": "Current output relative to the available capacity [0..1].",
+     "static": false
+    },
+    {
+     "type": "event",
+     "name": "OnRunningChanged",
+     "display": "On Running Changed",
+     "ctype": "FVWVSourceRunningChanged",
+     "default": "",
+     "category": "Voltweave|Events",
+     "editable": false,
+     "readonly_runtime": false,
+     "config": false,
+     "doc": "Fires on server and clients when the source is started or stopped."
+    },
+    {
+     "type": "event",
+     "name": "OnOutputChanged",
+     "display": "On Output Changed",
+     "ctype": "FVWVSourceOutputChanged",
+     "default": "",
+     "category": "Voltweave|Events",
+     "editable": false,
+     "readonly_runtime": false,
+     "config": false,
+     "doc": "Fires on server and clients when the delivered output changes noticeably."
+    },
+    {
+     "type": "property",
+     "name": "OutputWatts",
+     "display": "Output Watts",
+     "ctype": "float",
+     "default": "0.f",
+     "category": "Voltweave|Runtime State",
+     "editable": false,
+     "readonly_runtime": true,
+     "config": false,
+     "doc": "Live value in watts, read only."
+    }
+   ],
+   "kind": "class",
+   "file": "VWVSourceComponent.h"
+  },
+  {
+   "name": "UVWVSwitchComponent",
+   "parent": "UVWVNodeComponent",
+   "display": "Voltweave Switch",
+   "doc": "A manual switch. Power flows through it only while it is closed.",
+   "members": [
+    {
+     "type": "property",
+     "name": "bClosed",
+     "display": "Closed",
+     "ctype": "bool",
+     "default": "true",
+     "category": "Voltweave|Switch",
+     "editable": true,
+     "readonly_runtime": false,
+     "config": false,
+     "doc": "Initial position and current state. A closed switch conducts."
+    },
+    {
+     "type": "function",
+     "name": "SetClosed",
+     "display": "Set Closed",
+     "signature": "void SetClosed(bool bNewClosed)",
+     "pure": false,
+     "doc": "Opens or closes the switch. Server only.",
+     "static": false
+    },
+    {
+     "type": "function",
+     "name": "Toggle",
+     "display": "Toggle",
+     "signature": "bool Toggle()",
+     "pure": false,
+     "doc": "Flips the switch. Server only. Returns the new state (true = closed).",
+     "static": false
+    },
+    {
+     "type": "function",
+     "name": "IsClosed",
+     "display": "Is Closed",
+     "signature": "bool IsClosed() const",
+     "pure": true,
+     "doc": "True while the switch conducts.",
+     "static": false
+    },
+    {
+     "type": "event",
+     "name": "OnSwitchChanged",
+     "display": "On Switch Changed",
+     "ctype": "FVWVSwitchChanged",
+     "default": "",
+     "category": "Voltweave|Events",
+     "editable": false,
+     "readonly_runtime": false,
+     "config": false,
+     "doc": "Fires on server and clients when the switch opens or closes."
+    }
+   ],
+   "kind": "class",
+   "file": "VWVSwitchComponent.h"
+  }
+ ],
+ "enums": [
+  {
+   "name": "EVWVAllocationPolicy",
+   "doc": "How available power is shared between consumers.",
+   "values": [
+    {
+     "name": "Priority",
+     "doc": "Consumers with a lower Priority value are served first."
+    },
+    {
+     "name": "Proportional",
+     "doc": "Every consumer receives the same fraction of its demand."
+    }
+   ],
+   "kind": "enum",
+   "file": "VWVTypes.h"
+  },
+  {
+   "name": "EVWVBatteryState",
+   "doc": "State of a battery.",
+   "values": [
+    {
+     "name": "Idle",
+     "doc": ""
+    },
+    {
+     "name": "Charging",
+     "doc": ""
+    },
+    {
+     "name": "Discharging",
+     "doc": ""
+    },
+    {
+     "name": "Empty",
+     "doc": ""
+    },
+    {
+     "name": "Full",
+     "doc": ""
+    }
+   ],
+   "kind": "enum",
+   "file": "VWVTypes.h"
+  },
+  {
+   "name": "EVWVConsumerState",
+   "doc": "How a consumer is currently supplied.",
+   "values": [
+    {
+     "name": "Off",
+     "doc": "The consumer does not request power (switched off or zero demand)."
+    },
+    {
+     "name": "Unpowered",
+     "doc": "The consumer requests power but receives none."
+    },
+    {
+     "name": "Underpowered",
+     "doc": "The consumer receives only part of the requested power (brownout)."
+    },
+    {
+     "name": "Powered",
+     "doc": "The consumer receives all requested power."
+    }
+   ],
+   "kind": "enum",
+   "file": "VWVTypes.h"
+  },
+  {
+   "name": "EVWVFeedbackPreset",
+   "doc": "Ready-made look configurations.",
+   "values": [
+    {
+     "name": "Custom",
+     "doc": "You configure every state yourself."
+    },
+    {
+     "name": "Lamp",
+     "doc": "A lamp: lights up while powered, dims and flickers during a brownout, dark otherwise."
+    },
+    {
+     "name": "IndicatorLED",
+     "doc": "A status LED: green = good, amber = warning, red = fault, dark = off."
+    }
+   ],
+   "kind": "enum",
+   "file": "VWVFeedbackComponent.h"
+  },
+  {
+   "name": "EVWVIndicatorState",
+   "doc": "Simplified health of any node, meant for indicator lights and UI.",
+   "values": [
+    {
+     "name": "Off",
+     "doc": "Inactive, switched off or without a function right now."
+    },
+    {
+     "name": "Good",
+     "doc": "Working normally."
+    },
+    {
+     "name": "Warning",
+     "doc": "Working but stressed, partially supplied or manually opened."
+    },
+    {
+     "name": "Fault",
+     "doc": "Failed: no power, tripped, blown or empty."
+    }
+   ],
+   "kind": "enum",
+   "file": "VWVTypes.h"
+  },
+  {
+   "name": "EVWVNetworkState",
+   "doc": "Health of an isolated electrical network.",
+   "values": [
+    {
+     "name": "Idle",
+     "doc": "No demand and no supply."
+    },
+    {
+     "name": "Healthy",
+     "doc": "All demand is satisfied."
+    },
+    {
+     "name": "Deficit",
+     "doc": "Supply exists but demand exceeds it."
+    },
+    {
+     "name": "Blackout",
+     "doc": "Consumers request power but nothing can supply it."
+    }
+   ],
+   "kind": "enum",
+   "file": "VWVTypes.h"
+  },
+  {
+   "name": "EVWVProtectionKind",
+   "doc": "Kind of protection device.",
+   "values": [
+    {
+     "name": "Breaker",
+     "doc": "Trips on overload and can be reset any number of times."
+    },
+    {
+     "name": "Fuse",
+     "doc": "Blows on overload and must be replaced."
+    }
+   ],
+   "kind": "enum",
+   "file": "VWVTypes.h"
+  },
+  {
+   "name": "EVWVProtectionState",
+   "doc": "State of a protection device.",
+   "values": [
+    {
+     "name": "Closed",
+     "doc": "Conducting."
+    },
+    {
+     "name": "Open",
+     "doc": "Manually opened (breaker only)."
+    },
+    {
+     "name": "Tripped",
+     "doc": "Opened automatically because of an overload (breaker)."
+    },
+    {
+     "name": "Blown",
+     "doc": "Destroyed because of an overload (fuse)."
+    }
+   ],
+   "kind": "enum",
+   "file": "VWVTypes.h"
+  }
+ ],
+ "delegates": [
+  {
+   "kind": "delegate",
+   "name": "FVWVNetworkStateChanged",
+   "params": [
+    "const FVWVNetworkInfo&",
+    "Network",
+    "EVWVNetworkState",
+    "PreviousState"
+   ],
+   "file": "VWVGridSubsystem.h"
+  },
+  {
+   "kind": "delegate",
+   "name": "FVWVGridSolved",
+   "params": [],
+   "file": "VWVGridSubsystem.h"
+  },
+  {
+   "kind": "delegate",
+   "name": "FVWVBatteryStateChanged",
+   "params": [
+    "UVWVBatteryComponent*",
+    "Battery",
+    "EVWVBatteryState",
+    "NewState",
+    "EVWVBatteryState",
+    "OldState"
+   ],
+   "file": "VWVBatteryComponent.h"
+  },
+  {
+   "kind": "delegate",
+   "name": "FVWVConsumerStateChanged",
+   "params": [
+    "UVWVConsumerComponent*",
+    "Consumer",
+    "EVWVConsumerState",
+    "NewState",
+    "EVWVConsumerState",
+    "OldState"
+   ],
+   "file": "VWVConsumerComponent.h"
+  },
+  {
+   "kind": "delegate",
+   "name": "FVWVConsumerPowerLevelChanged",
+   "params": [
+    "UVWVConsumerComponent*",
+    "Consumer",
+    "float",
+    "Satisfaction"
+   ],
+   "file": "VWVConsumerComponent.h"
+  },
+  {
+   "kind": "delegate",
+   "name": "FVWVNodeEnergizedChanged",
+   "params": [
+    "UVWVNodeComponent*",
+    "Node",
+    "bool",
+    "bEnergized"
+   ],
+   "file": "VWVNodeComponent.h"
+  },
+  {
+   "kind": "delegate",
+   "name": "FVWVProtectionStateChanged",
+   "params": [
+    "UVWVProtectionComponent*",
+    "Device",
+    "EVWVProtectionState",
+    "NewState",
+    "EVWVProtectionState",
+    "OldState"
+   ],
+   "file": "VWVProtectionComponent.h"
+  },
+  {
+   "kind": "delegate",
+   "name": "FVWVProtectionTripped",
+   "params": [
+    "UVWVProtectionComponent*",
+    "Device"
+   ],
+   "file": "VWVProtectionComponent.h"
+  },
+  {
+   "kind": "delegate",
+   "name": "FVWVSourceRunningChanged",
+   "params": [
+    "UVWVSourceComponent*",
+    "Source",
+    "bool",
+    "bRunning"
+   ],
+   "file": "VWVSourceComponent.h"
+  },
+  {
+   "kind": "delegate",
+   "name": "FVWVSourceOutputChanged",
+   "params": [
+    "UVWVSourceComponent*",
+    "Source",
+    "float",
+    "OutputWatts"
+   ],
+   "file": "VWVSourceComponent.h"
+  },
+  {
+   "kind": "delegate",
+   "name": "FVWVSwitchChanged",
+   "params": [
+    "UVWVSwitchComponent*",
+    "Switch",
+    "bool",
+    "bClosed"
+   ],
+   "file": "VWVSwitchComponent.h"
+  }
+ ]
+}

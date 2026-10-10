@@ -1,0 +1,126 @@
+site_name: Voltweave Documentation
+site_description: Documentation of Voltweave, a modular and replicated power grid system for Unreal Engine 5.8.
+site_url: https://okurstudio.github.io/voltweave-docs/
+site_author: OkurStudio
+repo_url: https://github.com/OkurStudio/voltweave-docs
+repo_name: OkurStudio/voltweave-docs
+edit_uri: ""
+copyright: "&copy; 2026 OKUR BİLGİSAYAR YAZILIM VE PRODÜKSİYON E-TİCARET LİMİTED ŞİRKETİ"
+
+strict: true
+
+validation:
+  omitted_files: warn
+  absolute_links: warn
+  unrecognized_links: warn
+  anchors: warn
+
+theme:
+  name: material
+  language: en
+  logo: assets/icon.png
+  favicon: assets/icon.png
+  palette:
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: indigo
+      accent: amber
+      toggle:
+        icon: material/weather-night
+        name: Switch to dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: indigo
+      accent: amber
+      toggle:
+        icon: material/weather-sunny
+        name: Switch to light mode
+  features:
+    - navigation.sections
+    - navigation.top
+    - navigation.footer
+    - navigation.indexes
+    - search.suggest
+    - search.highlight
+    - content.code.copy
+    - content.tabs.link
+    - toc.follow
+
+extra_css:
+  - assets/extra.css
+
+plugins:
+  - search
+
+markdown_extensions:
+  - admonition
+  - attr_list
+  - md_in_html
+  - tables
+  - toc:
+      permalink: true
+  - pymdownx.details
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+  - pymdownx.tabbed:
+      alternate_style: true
+  - pymdownx.snippets:
+      base_path:
+        - snippets
+      check_paths: true
+  - pymdownx.emoji:
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
+
+nav:
+  - Home: index.md
+  - Getting started:
+      - Installation: getting-started/installation.md
+      - Your first power network: getting-started/first-network.md
+  - Concepts:
+      - How the grid works: concepts/how-it-works.md
+      - Sharing power: concepts/sharing-power.md
+      - Protection devices: concepts/protection.md
+      - Time, updates and authority: concepts/time-and-authority.md
+      - Limitations: concepts/limitations.md
+  - Guides:
+      - Blueprints: guides/blueprint.md
+      - C++: guides/cpp.md
+      - Wiring: guides/wiring.md
+  - Components:
+      - Overview: components/index.md
+      - Junction: components/junction.md
+      - Power Source: components/source.md
+      - Power Consumer: components/consumer.md
+      - Switch: components/switch.md
+      - Breaker and Fuse: components/protection.md
+      - Battery: components/battery.md
+      - State Feedback: components/feedback.md
+      - Cable: components/cable.md
+      - Project settings: components/settings.md
+  - Example scenarios:
+      - Overview: scenarios/index.md
+      - A door that needs power: scenarios/door.md
+      - An emergency light: scenarios/emergency-light.md
+      - A solar panel: scenarios/solar-panel.md
+      - A fuse box: scenarios/fuse-box.md
+      - Priorities and brownouts: scenarios/priorities-and-brownouts.md
+      - Redundancy: scenarios/redundancy.md
+  - Multiplayer: multiplayer.md
+  - API reference:
+      - Overview: api/index.md
+      - Blueprint function library: api/blueprint-library.md
+      - Grid subsystem: api/grid-subsystem.md
+      - Events: api/events.md
+      - Types: api/types.md
+      - Console commands: api/console.md
+      - Complete reference: api/reference.md
+  - The demo hall: demo.md
+  - Troubleshooting: troubleshooting.md
+  - FAQ: faq.md
+  - Release notes: release-notes.md
+  - Support: support.md
+  - Legal: legal.md
