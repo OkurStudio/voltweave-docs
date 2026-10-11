@@ -37,4 +37,4 @@ mkdocs serve
 
 ## Feedback
 
-Please open an issue for mistakes or unclear pages in the documentation. The product support contact is published with the product listing on Fab.
+Voltweave support and documentation feedback are handled through GitHub Issues of this repository. The tracker is public: never post project files, license or purchase information or personal data. See the Support page of the site.

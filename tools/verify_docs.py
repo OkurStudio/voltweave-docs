@@ -76,7 +76,7 @@ ALLOWED = {
     "on battery state changed", "apply preset", "get look for state", "rebind", "refresh cable", "is live",
     "find grid node", "get grid nodes", "add grid node to actor", "connect actors", "disconnect actors", "is actor powered",
     "consumer state to text", "network state to text", "protection state to text", "battery state to text", "format watts",
-    "developer tools", "cable actor", "voltweave junction", "voltweave power source", "voltweave power consumer", "voltweave switch", "voltweave breaker / fuse",
+    "developer tools", "github issues", "cable actor", "voltweave junction", "voltweave power source", "voltweave power consumer", "voltweave switch", "voltweave breaker / fuse",
     "voltweave battery", "voltweave state feedback", "voltweave cable", "voltweave consumer state",
 }
 known |= ALLOWED

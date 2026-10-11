@@ -1,5 +1,13 @@
 # Release notes
 
+## 0.2.0-rc.3 (release candidate)
+
+Release preparation only. No gameplay features and no solver, component or content changes.
+
+* The plugin descriptors carry the publisher, documentation and support addresses. Support is handled through GitHub Issues of the documentation repository; the [Support](support.md) page explains what never to post in the public tracker.
+* The documents inside the plugin link to this site and name the support channel.
+* Two tutorial steps corrected: how to bind a component event in the editor, and what an emptying battery does.
+
 ## 0.2.0-rc.2 (release candidate)
 
 Packaging and documentation only. No gameplay features and no solver, component or content changes.

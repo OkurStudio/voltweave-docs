@@ -1,0 +1,29 @@
+name: Question
+description: You need help using Voltweave.
+title: "[Question] "
+labels: ["question"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        **This tracker is public.** Do not include project files, license or purchase information or personal data. Please read the Troubleshooting and FAQ pages of the documentation first.
+  - type: input
+    id: versions
+    attributes:
+      label: Versions
+      description: Unreal Engine version and Voltweave version.
+    validations:
+      required: true
+  - type: textarea
+    id: question
+    attributes:
+      label: What are you trying to do?
+    validations:
+      required: true
+  - type: checkboxes
+    id: privacy
+    attributes:
+      label: Privacy check
+      options:
+        - label: I have not included project files, license or purchase information, or personal data.
+          required: true

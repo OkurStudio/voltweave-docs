@@ -13,7 +13,7 @@ hide:
 [Build your first network](getting-started/first-network.md){ .md-button }
 
 !!! info "Version"
-    This documentation describes Voltweave **0.2.0-rc.2** (release candidate) for Unreal Engine 5.8 on Windows 64-bit.
+    This documentation describes Voltweave **0.2.0-rc.3** (release candidate) for Unreal Engine 5.8 on Windows 64-bit.
 
 ## What you get
 

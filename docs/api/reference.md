@@ -1,6 +1,6 @@
 # Complete reference
 
-Generated from the public headers of Voltweave 0.2.0-rc.2. Every name on this page exists in that version.
+Generated from the public headers of Voltweave 0.2.0-rc.3. Every name on this page exists in that version.
 
 Blueprint names are the display names Unreal shows in the editor. *Server only* means the call has an effect only where the grid is simulated (the server or a standalone game); on a client it logs a warning and does nothing.
 
